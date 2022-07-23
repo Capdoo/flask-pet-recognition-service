@@ -46,13 +46,13 @@ def recognizer():
     # images, ensuring that the difference image is returned
     (score, diff) = compare_ssim(grayA, grayB, full=True)
     diff = (diff * 255).astype("uint8")
-    # mse = mse(grayA, grayB)
+    mse = mse(grayA, grayB)
     print("SSIM: {}".format(score))
 
     #cv2.imshow("Original", imageA)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    return jsonify({"SSIM":format(score)})
+    return jsonify({"SSIM":format(score), "MSE":format(mse)})
 
 def mse (imageA, imageB):
     err = np.sum((imageA.astype("float") - imageB.astype("float"))**2)
