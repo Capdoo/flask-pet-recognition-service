@@ -3,6 +3,7 @@ from skimage.metrics import structural_similarity as compare_ssim
 import argparse
 import imutils
 import cv2
+import numpy as np
 import urllib.request
 
 app = Flask(__name__)
@@ -45,6 +46,7 @@ def recognizer():
     # images, ensuring that the difference image is returned
     (score, diff) = compare_ssim(grayA, grayB, full=True)
     diff = (diff * 255).astype("uint8")
+    # mse = mse(grayA, grayB)
     print("SSIM: {}".format(score))
 
     #cv2.imshow("Original", imageA)
@@ -52,6 +54,10 @@ def recognizer():
     cv2.destroyAllWindows()
     return jsonify({"SSIM":format(score)})
 
+def mse (imageA, imageB):
+    err = np.sum((imageA.astype("float") - imageB.astype("float"))**2)
+    err /= float(imageA.shape[0] * imageA.shape[1])
+    return err
 
 def isReferenceBigger(_nameReference, _nameBullet):
     reference = cv2.imread(_nameReference)
@@ -64,10 +70,7 @@ def isReferenceBigger(_nameReference, _nameBullet):
     height_bullet = bullet.shape[0]
     indexBullet = width_bullet*height_bullet
 
-    if(indexReference > indexBullet):
-        return True
-    else:
-        return False
+    return indexReference > indexBullet
 
 def save_image(link,_newName):
     urllib.request.urlretrieve(link, _newName)
