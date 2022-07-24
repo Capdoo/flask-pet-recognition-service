@@ -4,6 +4,7 @@ import argparse
 import imutils
 import cv2
 import urllib.request
+import numpy as np
 
 app = Flask(__name__)
 
@@ -13,8 +14,8 @@ def index():
     return "Una vez una tarde llevaba a un niño un pollo a la espalda y el pollo el maestro no sabía qué cosa está llevando y quería preguntarle al maestro y le decía quería hacerle caerles ya preguntarle si estaba vivo o estaba muerto si estaba muerto le enseñaba el pollo vivo pero si estaba vivo perdón si estaba muerto decir un mayor decía que estaba muerto el niño del profesor entrega el niño le entregaba vivo pero si le decía que está muy esté vivo el niño torres y el cuello del pollo y le enseñaba el cuello el pollo muerto no sabía qué hacer el niño estaba con esa trampa para hacer el maestro y le pregunta el niño al maestro louis profesor maestro dígame el pollo que tengo en las manos está vivo" 
 
 
-@app.route('/imagen')
-def recognizer():
+@app.route('/imagen', methods = ['POST'])
+def recognizer():   
 
     link_reference = request.json['reference']
     link_bullet = request.json['bullet']
@@ -47,10 +48,24 @@ def recognizer():
     diff = (diff * 255).astype("uint8")
     print("SSIM: {}".format(score))
 
+    mseTarget = mse(grayA,grayB)
+    #print('a')
+    #err = np.sum((imageA.astype("float") - imageB.astype("float"))**2)
+    #err /= float(imageA.shape[0] * imageA.shape[1])
+    #mse = err
+    #print(err)
+    #print('b')
+
     #cv2.imshow("Original", imageA)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-    return jsonify({"SSIM":format(score)})
+    return jsonify({"SSIM":format(score), "MSE":format(mseTarget)})
+
+
+def mse (imageA, imageB):
+    err = np.sum((imageA.astype("float") - imageB.astype("float"))**2)
+    err /= float(imageA.shape[0] * imageA.shape[1])
+    return err
 
 
 def isReferenceBigger(_nameReference, _nameBullet):
@@ -71,6 +86,7 @@ def isReferenceBigger(_nameReference, _nameBullet):
 
 def save_image(link,_newName):
     urllib.request.urlretrieve(link, _newName)
+
 # I want to resize this image, 
 # with the dimensions of this image, 
 # and save it with this name
