@@ -49,14 +49,7 @@ def recognizer():
     print("SSIM: {}".format(score))
 
     mseTarget = mse(grayA,grayB)
-    #print('a')
-    #err = np.sum((imageA.astype("float") - imageB.astype("float"))**2)
-    #err /= float(imageA.shape[0] * imageA.shape[1])
-    #mse = err
-    #print(err)
-    #print('b')
 
-    #cv2.imshow("Original", imageA)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     return jsonify({"SSIM":format(score), "MSE":format(mseTarget)})
